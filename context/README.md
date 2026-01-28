@@ -1,23 +1,42 @@
 # Product Knowledge Base
 
-This directory contains accumulated product knowledge that grows with each PRD.
+This folder contains accumulated product knowledge that makes PRD creation faster and smarter over time.
 
-## Contents
+## Files
 
-| File | Purpose |
-|------|---------|
-| `business-rules.md` | Core business logic and constraints |
-| `user-roles.md` | User types, roles, and permission patterns |
-| `user-journeys.md` | Key user flows and paths |
-| `integrations.md` | External systems and touchpoints |
+| File | Domain | Description |
+|------|--------|-------------|
+| `business-rules.md` | Platform | Lead distribution, qualification criteria, status transitions, timeouts, permissions |
+| `user-roles.md` | Users | Role definitions, capabilities, permission levels |
+| `user-journeys.md` | Flows | Complete user flows from lead to case, supervisor/admin journeys |
+| `integrations.md` | Technical | Service dependencies, API contracts, external integrations |
 
-## How It Works
+## How This Works
 
-1. When creating a new PRD, the system scans this context silently
-2. Context informs smarter questions and better PRDs
-3. After PRD creation, new learnings are extracted back here
-4. Over time, interviews get shorter as the knowledge base grows
+When you create a new PRD, Claude silently scans this context to:
+- Skip questions it already knows the answer to
+- Ask smarter, more specific questions
+- Pre-fill sections with accurate information
+- Catch inconsistencies with existing product knowledge
 
-## Adding New Context
+## Adding Knowledge
 
-Use `/compound-context [prd-path]` after creating a PRD to extract learnings.
+After creating a PRD, use `/compound-context [prd-path]` to extract learnings:
+- New business rules
+- New user roles or permissions
+- New integration touchpoints
+- Updated user journeys
+
+## Searching Context
+
+Use YAML frontmatter to find relevant knowledge:
+
+```yaml
+---
+domain: platform       # Filter by domain
+type: business-rules   # Filter by type
+---
+```
+
+Domains: `platform`, `users`, `flows`, `technical`
+Types: `business-rules`, `user-roles`, `user-journeys`, `integrations`
