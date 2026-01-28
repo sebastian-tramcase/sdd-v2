@@ -206,6 +206,75 @@ All permissions are **schema-aware**:
 
 ---
 
+## 6. Prospect Stage Rules
+
+> **DOCUMENTATION GAP**: Detailed business rules for the Prospect stage need to be documented. The high-level workflow is in `user-journeys.md`.
+
+### Known Substages
+
+| Substage | Owner | Next Step |
+|----------|-------|-----------|
+| Intake Scheduled | DVS Agent | Intake Completed |
+| Intake Completed | DVS Agent | Under Review |
+| Under Review | Legal Advisor | Consultation Scheduled |
+| Consultation Scheduled | Legal + Retainer | Consultation Completed |
+| Consultation Completed | Retainer Team | Converted / Not Converted |
+
+### Conversion Outcomes
+
+| Status | Description | Next Step |
+|--------|-------------|-----------|
+| **Converted** | Client agrees to proceed | Assign to Case Manager |
+| **Retained** | Signed and paid retainer | Open Case created |
+| **Not Converted** | Client declines | Re-engagement flow |
+
+### Rules to Document
+
+- [ ] Prospect stage timeout rules (how long can a prospect sit in each substage?)
+- [ ] Intake scheduling SLAs
+- [ ] Under Review timeout and escalation
+- [ ] Consultation no-show handling
+- [ ] Re-engagement flow triggers and cadence
+- [ ] DVS Agent assignment rules
+
+---
+
+## 7. Case Stage Rules
+
+> **DOCUMENTATION GAP**: Detailed business rules for the Case stage need to be documented. The high-level workflow is in `user-journeys.md`.
+
+### Known Workflow Stages
+
+```
+SALE PROCESS → GATHERING → PROCESSING → REVIEW → COMPLETE
+     ↓              ↓           ↓           ↓
+ Compliance    Compliance   Compliance  Compliance
+  Revision      Revision     Revision    Revision
+```
+
+### Agent Specialist Types
+
+| Specialist | Responsibilities |
+|------------|------------------|
+| Follow-Up (FU) | Document collection, questionnaires |
+| Attorney (ATTY) | Legal questionnaire, WC checklist |
+| Psychologist (PSYCH) | Client interviews, evidence gathering |
+| Writer (WAE) | Declaration writing, evidence packages |
+| Coordinator (PCC) | Packet compilation |
+
+### Rules to Document
+
+- [ ] Case stage transition triggers (what moves a case from Gathering to Processing?)
+- [ ] Compliance checkpoint rules (what must pass before advancing?)
+- [ ] Agent Specialist assignment rules
+- [ ] Task assignment and handoff rules
+- [ ] RFE (Request for Evidence) handling rules
+- [ ] Case stage timeout and escalation rules
+- [ ] Case close/reopen rules
+- [ ] SLA definitions per stage
+
+---
+
 ## Quick Reference
 
 | Rule | Value | Notes |
