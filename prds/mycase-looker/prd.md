@@ -53,17 +53,9 @@ MyCase Looker is the case management interface that provides read/write access t
 - Critical Dates
 - Decisions & Outcomes
 
-**Architecture:**
+**Data Flow:**
 ```
-S3 Bucket (AI Summaries)
-    ↓
-CaseSummaryService.get_latest_case_summary(case_id)
-    ↓
-Django View
-    ↓
-React Component (Summary TabContent)
-    ↓
-User sees formatted summary
+AI Pipeline (generates summaries) → Storage → API → Summary Tab → User sees formatted summary
 ```
 
 **POC Cases:** 30066182, 29834304, 12905057, 17275979, 18478577, 24958826, 33980506

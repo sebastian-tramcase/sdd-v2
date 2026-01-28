@@ -33,7 +33,7 @@ Clients aren't automatically notified of case progress:
 
 **Key Flow:**
 1. Case manager updates case stage in MyCase Looker (e.g., "Filing" → "Processing")
-2. System detects stage change via Django signals
+2. System detects stage change
 3. System matches case against notification rules using normalized data
 4. SMS automatically sent to client's primary phone number
 5. Message logged in Omnichannel inbox for visibility
@@ -50,11 +50,10 @@ Clients aren't automatically notified of case progress:
 
 **Acceptance Criteria:**
 - [ ] System detects case stage changes in MyCase Looker
-- [ ] Notifications match cases using `normalized_practice_area` and `normalized_case_stage` (clean data)
+- [ ] Notifications match cases using normalized practice area and case stage (clean data)
 - [ ] SMS messages automatically sent when cases match notification rules
 - [ ] All SMS messages logged in Omnichannel for visibility
 - [ ] Admin can configure SMS templates per practice area + stage combination
-- [ ] SMS sending uses existing `_send_sms_with_history` pattern
 
 ---
 
@@ -114,10 +113,9 @@ Clients aren't automatically notified of case progress:
 ## Related Features
 
 **Client Portal - Document Workflows with SMS Automation (TCLAW-1119):**
-This Case Status Updates feature shares SMS patterns with the Document Workflows feature in Client Portal. Both use:
+This Case Status Updates feature shares patterns with the Document Workflows feature in Client Portal. Both use:
 - Normalized practice area and case stage for matching
-- Same `_send_sms_with_history` infrastructure
-- Omnichannel logging for visibility
+- SMS logging in Omnichannel for visibility
 
 The difference: Case Status Updates is triggered by stage changes, while Document Workflows is triggered by document requirements matching.
 

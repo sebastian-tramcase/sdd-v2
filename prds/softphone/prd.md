@@ -119,14 +119,12 @@ Agents need enhanced voice communication tools:
 - Both must be favorable for dialing to occur
 - Uses Telnyx Call Control API with AMD (Answering Machine Detection)
 
-**Architecture:**
+**Flow:**
 ```
-Manager UI → Auto-Dialer Service → Telnyx Call Control API → Lead Phone
-                  ↓                        ↓
-          Agent Status Service      AMD Detection (Human/Machine)
-          (pause if 0 available)           ↓
-                                    Human → Distribution → LiveKit Room
-                                    Machine → Tag Outcome (no agent)
+Manager enables auto-dialer → System dials leads → AMD detects answer type
+                                                          ↓
+                                          Human → Route to available agent
+                                          Machine → Tag outcome, return to queue
 ```
 
 ---
