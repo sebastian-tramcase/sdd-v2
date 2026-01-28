@@ -11,86 +11,153 @@ initiative: Platform Stabilization
 
 ## Executive Summary
 
-MyCase Looker is the case management interface that provides read/write access to case data. This initiative covers stabilization and feature enhancements to replace API calls with direct DB access and add missing functionality.
+MyCase Looker is the case management interface that provides read/write access to case data. This initiative covers stabilization and feature enhancements including AI-generated case summaries, case stage improvements, and notes enhancements.
 
 ---
 
 ## Problem Statement
 
-MyCase Looker needs improvements:
-- Not all case stages visible/editable
-- Notes have insufficient character limits
-- No contact view with linked cases
-- Billing information not displayed
-
----
-
-## Proposed Solution
-
-Enhance MyCase Looker with:
-1. All case stages visible and editable
-2. Extended notes with rich text (200K character limit)
-3. Contact view with linked cases
-4. Read-only billing information display
-
----
-
-## User Stories
-
-| Priority | As a... | I want... | So that... |
-|----------|---------|-----------|------------|
-| P1 | Paralegal | to see and edit all case stages | I can track full case progression |
-| P1 | Agent | rich text notes with 200K limit | I can document complex case details |
-| P1 | Case Manager | to view contacts with linked cases | I can see full contact history |
-| P2 | Case Manager | to reopen closed cases | I can handle case extensions |
-| P2 | Agent | billing information display | I can see payment status |
+- **Case stages**: Not all stages visible/editable, missing FULLY and SEMI stages
+- **Notes**: Character limits too restrictive (10K), no rich text
+- **Contact view**: No way to see contacts with linked cases
+- **Case summaries**: Agents spend time reading through case notes to understand case status
+- **Billing**: No billing information displayed
 
 ---
 
 ## Features
 
-| Feature | Description | Priority | Status |
-|---------|-------------|----------|--------|
-| Case Stage | Replace API calls with DB + add missing stages | Critical | In Progress |
-| Notes: Character Limit | Extend from 10,000 to 200,000 characters | High | Complete |
-| Notes: Rich Text | Rich text formatting support | High | Complete |
-| Notes: Edit & Delete | Basic editing functionality | High | Complete |
-| Notes: Expand/Collapse All | Button to expand/collapse all notes | High | Complete |
-| Practice Area | Enable practice area editing | Medium | In Progress |
-| Case Status | Display Open/Closed status | Medium | Complete |
-| Spell Check | Fix bug in notes and messages | Medium | Complete |
-| Reports | CSV downloads | High | Not Started |
-| Contact View | Contact view (depends on data model) | High | Not Started |
-| Linked Cases | Derivatives and Combos support | High | Not Started |
-| Case Stage Reopen | New stage for reopened cases | High | Not Started |
-| Close & Reopen Cases | Update status, archive, record close date | High | Not Started |
-| Billing (Read-only) | Display payment info | Medium | Not Started |
+### 1. Case Smart Summary (P1)
+
+**Objective:** Display AI-generated case summaries in a new "Summary" tab, enabling quick case overviews.
+
+**User Stories:**
+
+| ID | Story | Priority | Phase |
+|----|-------|----------|-------|
+| TCLAW-1106 | Add Summary tab with hardcoded POC data for 7 specific cases | P1 | POC |
+| TCLAW-1107 | Connect Summary tab to AI pipeline API | P1 | Integration |
+| TCLAW-1108 | Handle loading, error, and empty states for summaries | P2 | Polish |
+
+**Acceptance Criteria:**
+- [ ] Users can view a "Summary" tab in Case Detail (alongside Notes, Documents, Portal, Consultation)
+- [ ] Summary tab displays AI-generated case overview with structured sections
+- [ ] Feature controlled by feature flag for controlled POC rollout
+- [ ] Summary data retrieved from AI pipeline (S3/SQS) via CaseSummaryService
+- [ ] Clear feedback when summary is unavailable
+
+**Summary Sections:**
+- Executive Summary
+- Key Events
+- Action Items
+- Critical Dates
+- Decisions & Outcomes
+
+**Architecture:**
+```
+S3 Bucket (AI Summaries)
+    ↓
+CaseSummaryService.get_latest_case_summary(case_id)
+    ↓
+Django View
+    ↓
+React Component (Summary TabContent)
+    ↓
+User sees formatted summary
+```
+
+**POC Cases:** 30066182, 29834304, 12905057, 17275979, 18478577, 24958826, 33980506
 
 ---
 
-## Success Metrics
+### 2. Case Stage Improvements (Critical)
 
-| Metric | Target |
-|--------|--------|
-| All case stages visible | Yes |
-| Notes character limit | 200K |
-| Contact view functional | Yes |
+**Objective:** Replace API calls with direct DB access and add missing stages.
+
+**User Stories:**
+
+| ID | Title | Type | Status |
+|----|-------|------|--------|
+| MCL-003 | Stage changes reverting automatically | Bug | Draft |
+
+**Missing Stages to Add:** FULLY, SEMI
 
 ---
 
-## Technical Approach
+### 3. Notes Enhancements (Complete)
 
-- **Stack:** Django ORM, PostgreSQL, React
-- **Integrates with:** MyCase data model, LawOS authentication
+| Feature | Status |
+|---------|--------|
+| Character limit 10K → 200K | Complete |
+| Rich text formatting | Complete |
+| Edit & Delete | Complete |
+| Expand/Collapse All | Complete |
+| Spell check fix | Complete |
+
+---
+
+### 4. Contact View (P1)
+
+Contact view with linked cases - depends on Data Foundation Contact Migration.
+
+---
+
+### 5. Linked Cases (P1)
+
+Support for Derivatives and Combos (related cases).
+
+---
+
+### 6. Case Reopen (P1)
+
+New stage for reopened cases. Ability to update status, archive, record close date.
+
+---
+
+### 7. Practice Area (P2)
+
+Enable practice area editing in case detail.
+
+---
+
+### 8. Billing Read-Only (P2)
+
+Display payment information (read-only).
+
+---
+
+### 9. Reports (P1)
+
+CSV downloads for case data.
+
+---
+
+## Technical Constraints
+
+### Must Follow
+- Pattern in: `codebase/lawos/packages/dashboard/src/pages/MyCase/Dashboard.tsx` (existing tabs)
+- Use `@tramcase/ui` Tabs components
+- Use `useFeatureFlag("case_smart_summary")` for visibility control
+- Follow existing data fetching patterns
+
+### Must Not
+- Duplicate summary rendering logic
+- Add new permissions - use existing `mycase:looker` permission
+- Bypass feature flag during POC phase
 
 ---
 
 ## Dependencies
 
-| Dependency | Status |
-|------------|--------|
-| Data Foundation (Contact Migration) | Required |
-| Data Foundation (Matter Migration) | Required |
+### Blocked By
+- **PR #1671** for Case Smart Summary (provides CaseSummary model, service, API)
+- **AI Data Pipeline** (tramcase-data-pipelines repo) for summary generation
+- Data Foundation (Contact Migration, Matter Migration)
+
+### Blocks
+- Summary-based case insights dashboard
+- Summary in client portal
+- Summary notifications/alerts
 
 ---
 

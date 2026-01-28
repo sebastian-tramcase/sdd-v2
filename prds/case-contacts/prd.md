@@ -54,17 +54,108 @@ This creates:
 
 ---
 
-## Proposed Solution
+## Features
 
-### What We're Building
+### 1. Case Contacts Data Model (P1 - Foundation)
 
-A Case Contacts system that:
-1. Links multiple contacts to a case with configurable role types
-2. Enables click-to-call/text from a case contact panel
-3. Records all communications with full case context
-4. Extends Omnichannel inbox to display case contact communications alongside client conversations
+**Objective:** Create the data models (CaseContact junction table, ContactRole) and extend existing CallHistory/SMSHistory models to support linking contacts to cases with defined roles.
 
-### Key Capabilities
+**User Stories:**
+
+| ID | Story | Priority |
+|----|-------|----------|
+| US-001 | Create CaseContact junction model | P1 |
+| US-002 | Create ContactRole model with platform defaults | P1 |
+| US-003 | Extend CallHistory with case_contact_id | P1 |
+| US-004 | Extend SMSHistory with case_contact_id | P1 |
+
+**Platform Default Roles:** Witness, Expert Witness, Opposing Party, Opposing Counsel, Adjuster, Medical Provider, Other
+
+**Acceptance Criteria:**
+- [ ] Contacts can be associated with cases via CaseContact model
+- [ ] Each association has a defined role from ContactRole
+- [ ] Platform default roles exist
+- [ ] Call and SMS history can be attributed to specific case contacts
+- [ ] Queries by case ID are performant (indexed)
+
+---
+
+### 2. Case Contact Panel (P1)
+
+**Objective:** Build a UI panel within MyCase Looker case detail view that displays all contacts associated with a case, allows agents to add/remove contacts with roles, and provides click-to-call/text functionality.
+
+**User Stories:**
+
+| ID | Story | Priority |
+|----|-------|----------|
+| US-001 | View all contacts for a case in panel | P1 |
+| US-002 | Add contact to case with role | P1 |
+| US-003 | Click-to-call case contact | P1 |
+| US-004 | Click-to-text case contact | P1 |
+| US-005 | Remove contact from case | P2 |
+
+**API Endpoints:**
+```
+GET  /api/cases/{mycase_case_id}/contacts/
+POST /api/cases/{mycase_case_id}/contacts/
+DELETE /api/cases/{mycase_case_id}/contacts/{id}/
+GET  /api/contact-roles/
+```
+
+**Acceptance Criteria:**
+- [ ] Agents can see all contacts associated with a case in MyCase Looker
+- [ ] Agents can add new contacts to a case with a defined role
+- [ ] Agents can initiate calls to case contacts directly from the panel
+- [ ] Agents can send SMS to case contacts directly from the panel
+- [ ] All communications are logged with case_contact_id
+- [ ] Panel loads in under 500ms with up to 50 contacts
+
+---
+
+### 3. Omnichannel Case Extension (P1)
+
+**Objective:** Extend the existing Omnichannel inbox to support case-based querying and auto-scope to the current case when viewed within MyCase Looker, displaying all communications across all case contacts.
+
+**User Stories:**
+
+| ID | Story | Priority |
+|----|-------|----------|
+| US-001 | Query Omnichannel by case ID | P1 |
+| US-002 | Auto-scope inbox when viewing case | P1 |
+| US-003 | Display contact name and role for each communication | P1 |
+| US-004 | Maintain backwards compatibility for old records | P1 |
+
+**Query Strategy:**
+- Lead-based (existing): Query by `lead_id`
+- Case-based (new): Query by `mycase_case_id` using `CallHistory.matter_id` and `SMSHistory.case_number`
+
+**API Extension:**
+```
+GET /api/omnichannel/conversations/?case_id={mycase_case_id}
+```
+
+**Acceptance Criteria:**
+- [ ] Omnichannel inbox can query by case ID (in addition to lead ID)
+- [ ] Inbox auto-scopes to current case when viewing in MyCase Looker
+- [ ] Communications show contact name and role (e.g., "Jane Smith - Witness")
+- [ ] Old records without case_contact_id still appear (backwards compatible)
+- [ ] Existing lead-based Omnichannel functionality unchanged
+
+---
+
+## Dependency Structure
+
+```
+Data Model (Foundation)
+    ├── blocks → Contact Panel (needs CaseContact model)
+    └── blocks → Omnichannel Extension (needs case_contact_id on history models)
+
+Contact Panel ←→ Omnichannel Extension (can be developed in parallel after Data Model)
+```
+
+---
+
+## Key Capabilities Summary
 
 | Capability | Description | Priority |
 |------------|-------------|----------|
